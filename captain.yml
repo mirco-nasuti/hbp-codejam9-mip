@@ -1,0 +1,9 @@
+target_image:
+  build: Dockerfile
+  image: hbpmip/my-algorithm
+  pre:
+    - echo "Preparing my-algorithm"
+  post:
+    - echo "Finished my-algorithm"
+  test:
+    - ./tests/test.sh

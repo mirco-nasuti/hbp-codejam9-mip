@@ -1,0 +1,90 @@
+---
+
+version: '2'
+services:
+
+  db:
+    image: postgres:9.6.5-alpine
+    hostname: db
+    environment:
+      POSTGRES_PASSWORD: test
+
+  wait_dbs:
+    image: "waisbrot/wait"
+    restart: "no"
+    environment:
+      TARGETS: "db:5432"
+      TIMEOUT: 60
+
+  create_dbs:
+    image: "hbpmip/create-databases:1.0.0"
+    restart: "no"
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_ADMIN_USER: postgres
+      DB_ADMIN_PASSWORD: test
+      DB1: features
+      USER1: features
+      PASSWORD1: featurespwd
+      DB2: woken
+      USER2: woken
+      PASSWORD2: wokenpwd
+    depends_on:
+      - db
+
+  sample_data_db_setup:
+    image: "hbpmip/sample-data-db-setup:0.6.2"
+    container_name: "data-db-setup"
+    restart: "no"
+    environment:
+      FLYWAY_DBMS: postgresql
+      FLYWAY_HOST: db
+      FLYWAY_PORT: 5432
+      FLYWAY_DATABASE_NAME: features
+      FLYWAY_USER: postgres
+      FLYWAY_PASSWORD: test
+    depends_on:
+      - db
+
+  woken_db_setup:
+    image: "hbpmip/woken-db-setup:1.2.2"
+    container_name: "woken-db-setup"
+    restart: "no"
+    environment:
+      FLYWAY_DBMS: postgresql
+      FLYWAY_HOST: db
+      FLYWAY_PORT: 5432
+      FLYWAY_DATABASE_NAME: woken
+      FLYWAY_USER: postgres
+      FLYWAY_PASSWORD: test
+    depends_on:
+      - db
+
+  my-algorithm:
+    image: "hbpmip/my-algorithm:latest"
+    container_name: "my-algorithm"
+    restart: "no"
+    environment:
+      NODE: job_test
+      JOB_ID: 1
+      IN_DBAPI_DRIVER: postgresql
+      IN_USER: features
+      IN_PASSWORD: featurespwd
+      IN_HOST: db
+      IN_PORT: 5432
+      IN_DATABASE: features
+      OUT_DBAPI_DRIVER: postgresql
+      OUT_USER: woken
+      OUT_PASSWORD: wokenpwd
+      OUT_HOST: db
+      OUT_PORT: 5432
+      OUT_DATABASE: woken
+      PARAM_variables: "subjectageyears"
+      PARAM_covariables: "lefthippocampus,leftthalamusproper,leftacgganteriorcingulategyrus,leftententorhinalarea"
+      PARAM_grouping: ""
+      PARAM_query: "SELECT subjectageyears,lefthippocampus,leftthalamusproper,leftacgganteriorcingulategyrus,leftententorhinalarea FROM cde_features_a"
+      PARAM_meta: "{\"rightphgparahippocampalgyrus\":{\"description\":\"\",\"methodology\":\"lren-nmm-volumes\",\"label\":\"Right parahippocampal gyrus\",\"code\":\"rightphgparahippocampalgyrus\",\"units\":\"cm3\",\"type\":\"real\"},\"lefthippocampus\":{\"description\":\"\",\"methodology\":\"lren-nmm-volumes\",\"label\":\"Left Hippocampus\",\"code\":\"lefthippocampus\",\"units\":\"cm3\",\"type\":\"real\"},\"rightthalamusproper\":{\"description\":\"\",\"methodology\":\"lren-nmm-volumes\",\"label\":\"Right Thalamus\",\"code\":\"rightthalamusproper\",\"units\":\"cm3\",\"type\":\"real\"},\"rightacgganteriorcingulategyrus\":{\"description\":\"\",\"methodology\":\"lren-nmm-volumes\",\"label\":\"Right anterior cingulate gyrus\",\"code\":\"rightacgganteriorcingulategyrus\",\"units\":\"cm3\",\"type\":\"real\"},\"leftthalamusproper\":{\"description\":\"\",\"methodology\":\"lren-nmm-volumes\",\"label\":\"Left Thalamus\",\"code\":\"leftthalamusproper\",\"units\":\"cm3\",\"type\":\"real\"},\"leftphgparahippocampalgyrus\":{\"description\":\"\",\"methodology\":\"lren-nmm-volumes\",\"label\":\"Left parahippocampal gyrus\",\"code\":\"leftphgparahippocampalgyrus\",\"units\":\"cm3\",\"type\":\"real\"},\"rightmcggmiddlecingulategyrus\":{\"description\":\"\",\"methodology\":\"lren-nmm-volumes\",\"label\":\"Right middle cingulate gyrus\",\"code\":\"rightmcggmiddlecingulategyrus\",\"units\":\"cm3\",\"type\":\"real\"},\"leftacgganteriorcingulategyrus\":{\"description\":\"\",\"methodology\":\"lren-nmm-volumes\",\"label\":\"Left anterior cingulate gyrus\",\"code\":\"leftacgganteriorcingulategyrus\",\"units\":\"cm3\",\"type\":\"real\"},\"leftmcggmiddlecingulategyrus\":{\"description\":\"\",\"methodology\":\"lren-nmm-volumes\",\"label\":\"Left middle cingulate gyrus\",\"code\":\"leftmcggmiddlecingulategyrus\",\"units\":\"cm3\",\"type\":\"real\"},\"leftententorhinalarea\":{\"description\":\"\",\"methodology\":\"lren-nmm-volumes\",\"label\":\"Left entorhinal area\",\"code\":\"leftententorhinalarea\",\"units\":\"cm3\",\"type\":\"real\"},\"rightpcggposteriorcingulategyrus\":{\"description\":\"\",\"methodology\":\"lren-nmm-volumes\",\"label\":\"Right posterior cingulate gyrus\",\"code\":\"rightpcggposteriorcingulategyrus\",\"units\":\"cm3\",\"type\":\"real\"},\"leftpcggposteriorcingulategyrus\":{\"description\":\"\",\"methodology\":\"lren-nmm-volumes\",\"label\":\"Left posterior cingulate gyrus\",\"code\":\"leftpcggposteriorcingulategyrus\",\"units\":\"cm3\",\"type\":\"real\"},\"subjectageyears\":{\"description\":\"Subject age in years.\",\"methodology\":\"mip-cde\",\"label\":\"Age Years\",\"minValue\":0,\"code\":\"subjectageyears\",\"units\":\"years\",\"length\":3,\"maxValue\":130.0,\"type\":\"integer\"},\"righthippocampus\":{\"description\":\"\",\"methodology\":\"lren-nmm-volumes\",\"label\":\"Right Hippocampus\",\"code\":\"righthippocampus\",\"units\":\"cm3\",\"type\":\"real\"},\"rightententorhinalarea\":{\"description\":\"\",\"methodology\":\"lren-nmm-volumes\",\"label\":\"Right entorhinal area\",\"code\":\"rightententorhinalarea\",\"units\":\"cm3\",\"type\":\"real\"}}"
+      MODEL_PARAM_design: "factorial"
+    links:
+      - "db:db"
