@@ -1,6 +1,6 @@
 ## Run unit tests
 
-FROM hbpmip/python-base-build:0.0.0
+FROM hbpmip/python-base-build:0.4.5
 
 COPY requirements-dev.txt /requirements-dev.txt
 RUN pip install -r /requirements-dev.txt
