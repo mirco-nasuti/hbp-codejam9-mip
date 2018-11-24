@@ -23,18 +23,14 @@ Anova draft
 
 `git clone ssh://git@lab01560.intranet.chuv:2222/mirco/anova-draft.git`
 
-MIP Algorithm Template
-
-`git clone ssh://git@lab01560.intranet.chuv:2222/mirco/mip-algorithm-template.git`
-
 Testing environment
 
-`git clone ssh://git@lab01560.intranet.chuv:2222/algorithm-factory/algorithm-factory-demo.git`
+`git clone git@github.com:HBPMedical/algorithm-factory-demo.git`
 
 
 ### 2. Template adaptation
 
-Copy your algorithm sources, requirements, etc to the template project. You can either replace the `main.py` file or use a different file name, in which case you'll have to rename any reference to this file in the project.
+Copy your algorithm source code, requirements, and any other needed files to the template project. You can either replace the `main.py` file or use a different file name, in which case you'll have to rename any reference to this file in the project.
 
 `cp ../anova-draft/anova.py main.py`
 
@@ -63,7 +59,7 @@ In order to store the data, you should use the following function:
 
 `io_helper.save_results(anova_results, Shapes.JSON)`
 
-Note that the output fromat must be a PFA document.
+Note that the output format must be a PFA document.
 
 
 ### 5. Useful functions and wrappers in the mip_helper library
